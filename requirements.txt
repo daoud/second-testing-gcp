@@ -1,0 +1,13 @@
+werkzeug==2.2.3
+gunicorn==20.1.0
+pandas==1.5.3  # Example: specify version for consistency (adjust based on your needs)
+#pyarrow==11.0.0  # Example: specify version for consistency (adjust based on your needs)
+pytest==7.2.2  # Ensure you're using a compatible version of pytest
+flask==2.2.3
+google-cloud-bigquery==3.11.4
+google-auth==2.20.0
+google-auth-oauthlib==0.4.6
+google-auth-httplib2==0.1.0
+google-cloud-secret-manager==2.10.0  # Ensure correct version if needed
+numpy==1.24.0  # Downgrade to a compatible version
+pyarrow==11.0.0

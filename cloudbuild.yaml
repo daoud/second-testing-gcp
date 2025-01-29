@@ -1,0 +1,44 @@
+substitutions:
+  _COMMIT_SHA: "latest"
+
+steps:
+# Step 1: Build Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/second-project-mlops/demo-flask-app:$_COMMIT_SHA', '.']
+
+# Step 2: Push Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/second-project-mlops/demo-flask-app:$_COMMIT_SHA']
+
+# Step 3: Run Tests using a Python base image
+- name: 'python:3.9-slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      # Install dependencies
+      pip install -r requirements.txt
+      # Install pytest for testing
+      pip install pytest
+      # Set the PYTHONPATH to include the current directory (since all files are here)
+      export PYTHONPATH=$(pwd)
+      # Run the tests located in the current directory (test_main.py)
+      pytest test_main.py
+# Step 4: Deploy to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+    - 'run'
+    - 'deploy'
+    - 'py-bq-load'  # Ensure this is your correct Cloud Run service name
+    - '--image'
+    - 'gcr.io/second-project-mlops/demo-flask-app:$_COMMIT_SHA'
+    - '--region'
+    - 'us-central1'
+    - '--allow-unauthenticated'
+
+images:
+- 'gcr.io/second-project-mlops/demo-flask-app:$_COMMIT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
